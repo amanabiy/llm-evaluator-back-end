@@ -14,6 +14,14 @@ services:
       - ./mysql_data:/var/lib/mysql
       - ./migration/init.sql:/docker-entrypoint-initdb.d/init.sql
 
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    restart: always
+    volumes:
+      - redis_data:/data  # Persist Redis data between container restarts
+
   app:
     build:
       context: .
@@ -23,6 +31,7 @@ services:
     depends_on:
       - mysql
       - mailhog
+      - redis
     environment:
       # MYSQL
       MYSQL_HOST: mysql
@@ -40,6 +49,10 @@ services:
       MAIL_USER: ''
       MAIL_PASS: ''
 
+      # Redis for BullMQ
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+
     volumes:
       - ./src:/usr/src/app/src
       - ./test:/usr/src/app/test
@@ -55,3 +68,7 @@ services:
     ports:
       - "1025:1025"
       - "8025:8025"
+
+volumes:
+  redis_data:
+    driver: local

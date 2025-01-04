@@ -1,32 +1,34 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, IsNotEmpty, IsNumber, IsEnum, IsOptional } from 'class-validator';
 import { TestCaseStatus } from '../entities/test-case-result.entity';
+import { TestCase } from 'src/modules/test-cases/entities/test-case.entity';
+import { ExperimentRun } from 'src/modules/experiment-runs/entities/experiment-run.entity';
 
 export class CreateTestCaseResultDto {
   @ApiProperty({ description: 'ID of the test case', example: 'uuid' })
   @IsString()
   @IsNotEmpty()
-  testCaseId: string;
+  test_case: TestCase;
 
   @ApiProperty({ description: 'ID of the experiment run', example: 'uuid' })
   @IsString()
   @IsNotEmpty()
-  experimentRunId: string;
+  experiment_run: ExperimentRun;
 
   @ApiProperty({ description: 'Response from the test case execution', example: 'Response data' })
   @IsString()
-  @IsNotEmpty()
-  response: string;
+  @IsOptional()
+  response?: string;
 
   @ApiProperty({ description: 'Latency in milliseconds', example: 150 })
   @IsNumber()
-  @IsNotEmpty()
-  latency: number;
+  @IsOptional()
+  latency?: number;
 
   @ApiProperty({ description: 'Accuracy percentage', example: 95 })
   @IsNumber()
-  @IsNotEmpty()
-  accuracy: number;
+  @IsOptional()
+  accuracy?: number;
 
   @ApiProperty({ description: 'Optional description or evaluation prompt', required: false, example: 'Evaluation based on LLM' })
   @IsString()
@@ -35,6 +37,5 @@ export class CreateTestCaseResultDto {
 
   @ApiProperty({ description: 'Status of the test case result', enum: TestCaseStatus, example: TestCaseStatus.PENDING })
   @IsEnum(TestCaseStatus)
-  @IsOptional()
   status?: TestCaseStatus;
 }

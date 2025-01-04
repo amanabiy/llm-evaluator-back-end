@@ -7,7 +7,7 @@ import { BaseModelEntity } from 'src/BaseEntity/BaseEntity';
 
 export enum TestCaseStatus {
   SUCCESS = 'success',
-  FAILURE = 'failure',
+  FAILED = 'failed',
   PENDING = 'pending',
 }
 
@@ -35,32 +35,32 @@ export class TestCaseResult extends BaseModelEntity {
   })
   experiment_run: ExperimentRun;
 
-  @Column({ type: 'text' })
+  @Column({ type: 'text', nullable: true })
   @IsString()
-  @IsNotEmpty()
   @ApiProperty({
     description: 'The response received from the test case execution.',
     example: 'Response from the model after running the test case',
+    required: false,
   })
-  response: string;
+  response: string | null;
 
-  @Column({ type: 'numeric' })
+  @Column({ type: 'numeric', nullable: true })
   @IsNumber()
-  @IsNotEmpty()
   @ApiProperty({
     description: 'The latency (in milliseconds) of the test case response.',
     example: 150,
+    required: false,
   })
-  latency: number;
+  latency: number | null;
 
-  @Column({ type: 'numeric' })
+  @Column({ type: 'numeric', nullable: true })
   @IsNumber()
-  @IsNotEmpty()
   @ApiProperty({
     description: 'The accuracy (out of 100%) of the test case response.',
     example: 92,
+    required: false,
   })
-  accuracy: number;
+  accuracy: number | null;
 
   @Column({ type: 'text', nullable: true })
   @IsString()
@@ -69,7 +69,7 @@ export class TestCaseResult extends BaseModelEntity {
     required: false,
     example: 'Model evaluation based on the LLM evaluator',
   })
-  description: string;
+  description: string | null;
 
   @Column({
     type: 'enum',

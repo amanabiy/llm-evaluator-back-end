@@ -11,6 +11,7 @@ import { ExperimentsModule } from './modules/experiments/experiments.module';
 import { TestCasesModule } from './modules/test-cases/test-cases.module';
 import { TestCaseResultsModule } from './modules/test-case-results/test-case-results.module';
 import { ExperimentRunsModule } from './modules/experiment-runs/experiment-runs.module';
+import { BullModule } from '@nestjs/bullmq';
 
 @Module({
   imports: [
@@ -27,7 +28,12 @@ import { ExperimentRunsModule } from './modules/experiment-runs/experiment-runs.
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true,
     }),
-    TypeOrmModule.forFeature([User]),
+    BullModule.forRoot('alternative-config', {
+      connection: {
+        host: process.env.REDIS_HOST || 'redis',  // Using the environment variable
+        port: parseInt(process.env.REDIS_PORT, 10) || 6379,
+      },
+    }),
     UsersModule,
     AuthModule,
     MailModule,
