@@ -155,9 +155,8 @@ export class GenericDAL<Entity, DTO, UpdateDTO> {
     try {
       const result = await this.repository.delete(id);
       if (result.affected === 0) {
-        throw new HttpException(
+        throw new NotFoundException(
           `No ${this.entityName} found with id ${id}`,
-          HttpStatus.NOT_FOUND,
         );
       }
     } catch (error) {
@@ -191,8 +190,9 @@ export class GenericDAL<Entity, DTO, UpdateDTO> {
       const options: FindManyOptions = conditions || {};
       this.applyPagination(options, page, pageSize);
       this.addDefaultRelations(options);
-
+      console.log(options)
       const [items, total] = await this.repository.findAndCount(options);
+      console.log(items)
       const transformedItems = this.transformIfRequired(items, transform);
       return new FindAllResponseDto<Entity>(page, pageSize, total, transformedItems);
     } catch (error) {
@@ -202,4 +202,6 @@ export class GenericDAL<Entity, DTO, UpdateDTO> {
       );
     }
   }
+
+  
 }

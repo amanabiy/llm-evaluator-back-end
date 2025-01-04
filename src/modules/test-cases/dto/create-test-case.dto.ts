@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, IsNotEmpty, IsEnum, IsOptional } from 'class-validator';
 import { EvaluationMethod } from '../entities/test-case.entity';
+import { User } from 'src/modules/users/entity/user.entity';
 
 export class CreateTestCaseDto {
   @ApiProperty({ description: 'Title of the test case', example: 'Test case for exact match evaluation' })
@@ -27,10 +28,10 @@ export class CreateTestCaseDto {
   @IsOptional()
   evaluation_prompt: string;
 
-  @ApiProperty({ description: 'ID of the user who created the test case', example: 'uuid' })
   @IsString()
+  @IsOptional()
   @IsNotEmpty()
-  createdBy: string;
+  created_by: User;
 
   @ApiProperty({ description: 'ID of the experiment associated with the test case', example: 'uuid' })
   @IsString()

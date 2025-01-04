@@ -1,4 +1,7 @@
-import { PartialType } from '@nestjs/swagger';
+import { PartialType, OmitType } from '@nestjs/swagger';
 import { CreateTestCaseDto } from './create-test-case.dto';
 
-export class UpdateTestCaseDto extends PartialType(CreateTestCaseDto) {}
+// Exclude 'experimentId' attribute from the UpdateTestCaseDto
+export class UpdateTestCaseDto extends PartialType(
+  OmitType(CreateTestCaseDto, ['experimentId'] as const),
+) {}

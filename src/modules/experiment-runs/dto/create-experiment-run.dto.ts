@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNotEmpty } from 'class-validator';
+import { IsString, IsNotEmpty, IsOptional } from 'class-validator';
+import { User } from 'src/modules/users/entity/user.entity';
 
 export class CreateExperimentRunDto {
   @ApiProperty({ description: 'ID of the experiment', example: 'uuid' })
@@ -7,8 +8,8 @@ export class CreateExperimentRunDto {
   @IsNotEmpty()
   experimentId: string;
 
-  @ApiProperty({ description: 'ID of the user who initiated the run', example: 'uuid' })
   @IsString()
+  @IsOptional()
   @IsNotEmpty()
-  userId: string;
+  run_by: User;
 }

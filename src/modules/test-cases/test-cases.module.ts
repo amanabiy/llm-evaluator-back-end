@@ -1,13 +1,16 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { TestCase } from './entities/test-case.entity';
 import { TestCasesService } from './test-cases.service';
 import { TestCasesController } from './test-cases.controller';
+import { TestCase } from './entities/test-case.entity';
+import { ExperimentsModule } from '../experiments/experiments.module';  // Import ExperimentsModule
 
 @Module({
-  imports: [TypeOrmModule.forFeature([TestCase])],
-  providers: [TestCasesService],
+  imports: [
+    TypeOrmModule.forFeature([TestCase]),
+    ExperimentsModule,  // Ensure ExperimentsModule is imported
+  ],
   controllers: [TestCasesController],
-  exports: [TestCasesService],
+  providers: [TestCasesService],
 })
 export class TestCasesModule {}

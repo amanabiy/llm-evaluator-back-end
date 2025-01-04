@@ -8,6 +8,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { User } from '../users/entity/user.entity';
 import FindAllResponseDto from 'src/dto/find-all-response.dto';
+import { DeleteResponseDto } from 'src/dto/delete-response.dto';
 
 @ApiTags('Experiments')
 @Controller('experiments')
@@ -108,14 +109,8 @@ export class ExperimentsController {
   async remove(
     @Param('id') id: string,
     @CurrentUser() currentUser: User,  // Get the current logged-in user
-  ) {
-    const experiment = await this.experimentsService.findOne(id);
-    if (!experiment) {
-      throw new ForbiddenException('Experiment not found.');
-    }
-    if (experiment.created_by.id !== currentUser.id) {
-      throw new ForbiddenException('You are not authorized to delete this experiment.');
-    }
-    return this.experimentsService.remove(id);
+  ): Promise<DeleteResponseDto> {
+    this.experimentsService.remove(id);
+    return new DeleteResponseDto();
   }
 }
