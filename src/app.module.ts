@@ -12,6 +12,8 @@ import { TestCasesModule } from './modules/test-cases/test-cases.module';
 import { TestCaseResultsModule } from './modules/test-case-results/test-case-results.module';
 import { ExperimentRunsModule } from './modules/experiment-runs/experiment-runs.module';
 import { BullModule } from '@nestjs/bullmq';
+import { OpenAIModule } from './modules/llm/openai/openai.module';
+import { GroqAIModule } from './modules/llm/groq/groq.module';
 
 @Module({
   imports: [
@@ -28,7 +30,7 @@ import { BullModule } from '@nestjs/bullmq';
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true,
     }),
-    BullModule.forRoot('alternative-config', {
+    BullModule.forRoot({
       connection: {
         host: process.env.REDIS_HOST || 'redis',  // Using the environment variable
         port: parseInt(process.env.REDIS_PORT, 10) || 6379,
@@ -41,6 +43,8 @@ import { BullModule } from '@nestjs/bullmq';
     TestCasesModule,
     TestCaseResultsModule,
     ExperimentRunsModule,
+    // OpenAIModule,
+    GroqAIModule,
   ],
   controllers: [AppController],
   providers: [AppService],

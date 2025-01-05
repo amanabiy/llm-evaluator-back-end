@@ -32,6 +32,16 @@ export class TestCasesService extends GenericDAL<TestCase, CreateTestCaseDto, Up
     return this.testCaseRepository.save(testCase);
   }
 
+  async createWithoutExperimentOrUser(createTestCaseDto: CreateTestCaseDto): Promise<TestCase> {
+    const testCase = await super.create({
+      ...createTestCaseDto,
+      experiment: null, // Explicitly setting to null if no experiment is provided
+      created_by: null, // Explicitly setting to null if no user is provided
+    });
+
+    return testCase
+  }
+
   findByUser(currentUser: User, page: number, limit: number): Promise<FindAllResponseDto<TestCase>> {
     console.log(page, limit);
     return this.findWithPagination(

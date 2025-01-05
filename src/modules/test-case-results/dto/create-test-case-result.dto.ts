@@ -38,4 +38,9 @@ export class CreateTestCaseResultDto {
   @ApiProperty({ description: 'Status of the test case result', enum: TestCaseStatus, example: TestCaseStatus.PENDING })
   @IsEnum(TestCaseStatus)
   status?: TestCaseStatus;
+
+  @ApiProperty({ description: 'The LLM model used for this test case evaluation', example: 'llama-3.3-70b-versatile', required: false })
+  @IsString()
+  @IsOptional()
+  llm_model?: string;
 }

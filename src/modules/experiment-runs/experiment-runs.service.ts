@@ -20,10 +20,10 @@ export class ExperimentRunsService extends GenericDAL<ExperimentRun, CreateExper
     private experimentRunRepository: Repository<ExperimentRun>,
 
     private readonly experimentService: ExperimentsService,
-    @InjectQueue('experiment') private experimentQueue: Queue,
-    private readonly testCaseResultService: TestCaseResultsService,  // Inject TestCaseResultService
+    @InjectQueue('run-experiment') private experimentQueue: Queue,
+    private readonly testCaseResultsService: TestCaseResultsService,  // Inject TestCaseResultService
   ) {
-    super(experimentRunRepository, 0, 10, ['experiment', 'run_by', 'test_case_results'], ExperimentRun);
+    super(experimentRunRepository, 0, 10, ['experiment', 'run_by', 'test_case_results', 'test_case_results.test_case'], ExperimentRun);
   }
 
   async create(createExperimentRunDto: CreateExperimentRunDto): Promise<ExperimentRun> {
@@ -42,28 +42,55 @@ export class ExperimentRunsService extends GenericDAL<ExperimentRun, CreateExper
     // Save the experiment run
     const savedExperimentRun = await this.experimentRunRepository.save(experimentRun);
 
-    // Loop through the tests in the experiment and create a test case result for each one
+    // Loop through the tests in the experiment
     for (const test of experiment.test_cases) {
-      try {
-        // Create a new TestCaseResult and set status to 'PENDING'
-        const savedTestCaseResult = await this.testCaseResultService.createTestCaseResult(savedExperimentRun, test);
+      // Loop through each model in the LLM list for the experiment run
+      for (const model of createExperimentRunDto.llm_models || []) {
+        try {
+          // Create a new TestCaseResult for this combination of test case and model
+          const savedTestCaseResult = await this.testCaseResultsService.createTestCaseResult(
+            savedExperimentRun,
+            test,
+            model // Pass the model to the test case result creation
+          );
 
-        // Push the newly created test case result to the queue
-        await this.experimentQueue.add('run-experiment', {
-          experimentRunId: savedExperimentRun.id,
-          testCaseResultId: savedTestCaseResult.id,
-        });
-      } catch (error) {
-        // Log the error if job addition fails, but don't throw an error
-        this.logger.error(`Failed to queue test case result for test ID: ${test.id}`, error.stack);
+          // Push the newly created test case result to the queue with retry rules
+          await this.experimentQueue.add('run-experiment', {
+            experimentRunId: savedExperimentRun.id,
+            testCaseResultId: savedTestCaseResult.id,
+          }, {
+            attempts: 3,  // Retry up to 3 attempts (1 initial + 2 retries)
+            backoff: {
+              type: 'fixed',  // Fixed backoff time between retries
+              delay: 5000,    // Retry every 5 seconds
+            }
+          });
+        } catch (error) {
+          // Log the error if job addition fails, but don't throw an error
+          this.logger.error(`Failed to queue test case result for test ID: ${test.id} with model: ${model}`, error.stack);
 
-        // Update the status of the test case result to 'FAILED'
-        await this.testCaseResultService.updateTestCaseResultStatus(test.id, TestCaseStatus.FAILED);
+          // Update the status of the test case result to 'FAILED'
+          await this.testCaseResultsService.updateTestCaseResultStatus(test.id, TestCaseStatus.FAILED);
+        }
       }
     }
 
     // Return the saved experiment run
     return savedExperimentRun;
+  }
+
+  async checkAndCompleteExperimentRun(experimentRunId: string): Promise<void> {
+    // Fetch all test case results for the given experiment run
+    const testCaseResults = await this.testCaseResultsService.findAllByExperimentRunId(experimentRunId);
+
+    // Check if all test case results have a status of 'COMPLETED'
+    const allCompleted = testCaseResults.every(result => result.status === TestCaseStatus.COMPLETED);
+
+    // If all are completed, update the experiment run status to 'COMPLETED'
+    if (allCompleted) {
+      await this.updateStatus(experimentRunId, ExperimentRunStatus.COMPLETED);
+      this.logger.log(`ExperimentRun with ID ${experimentRunId} marked as COMPLETED`);
+    }
   }
 
   async updateStatus(id: string, status: ExperimentRunStatus): Promise<ExperimentRun> {

@@ -6,9 +6,11 @@ import { ExperimentRun } from 'src/modules/experiment-runs/entities/experiment-r
 import { BaseModelEntity } from 'src/BaseEntity/BaseEntity';
 
 export enum TestCaseStatus {
-  SUCCESS = 'success',
+  // SUCCESS = 'success',
+  COMPLETED = 'completed',
   FAILED = 'failed',
   PENDING = 'pending',
+  IN_PROGRESS = 'in progress'
 }
 
 @Entity('test_case_results')
@@ -83,4 +85,13 @@ export class TestCaseResult extends BaseModelEntity {
     example: TestCaseStatus.PENDING,
   })
   status: TestCaseStatus;
+
+  @Column({ type: 'text', nullable: true })
+  @IsString()
+  @ApiProperty({
+    description: 'The LLM model used for this test case evaluation.',
+    example: 'llama-3.3-70b-versatile',
+    required: false,
+  })
+  llm_model: string | null;
 }

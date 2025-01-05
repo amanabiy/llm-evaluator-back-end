@@ -21,7 +21,7 @@ export class TestCaseResultsService extends GenericDAL<TestCaseResult, CreateTes
   }
 
   // Create a new TestCaseResult using the `super.create` method from GenericDAL
-  async createTestCaseResult(experimentRun: ExperimentRun, test: TestCase): Promise<TestCaseResult> {
+  async createTestCaseResult(experimentRun: ExperimentRun, test: TestCase, llm_model: string): Promise<TestCaseResult> {
     // Create a new test case by omitting the `id` of the provided test
     const { id, experiment, ...testWithoutId } = test; // Destructure and omit the `id`
 
@@ -36,6 +36,7 @@ export class TestCaseResultsService extends GenericDAL<TestCaseResult, CreateTes
       experiment_run: experimentRun,
       test_case: newTestCase, // Use the newly created test case instead of the original one
       status: TestCaseStatus.PENDING,  // Initially setting the status to 'PENDING'
+      llm_model,
     };
 
     // Use the `super.create` method to create the TestCaseResult entity
@@ -54,5 +55,12 @@ export class TestCaseResultsService extends GenericDAL<TestCaseResult, CreateTes
   // A helper function to find and return a test case result by ID using the `super.findOne` method
   async getTestCaseResultById(testCaseResultId: string): Promise<TestCaseResult> {
     return super.findOne(testCaseResultId);
+  }
+
+  async findAllByExperimentRunId(experimentRunId: string): Promise<TestCaseResult[]> {
+    const results = await this.find({
+      where: { experiment_run: { id: experimentRunId } },  // Include relations if needed
+    }, false);
+    return results;
   }
 }

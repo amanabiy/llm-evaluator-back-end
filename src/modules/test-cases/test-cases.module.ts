@@ -12,5 +12,6 @@ import { ExperimentsModule } from '../experiments/experiments.module';  // Impor
   ],
   controllers: [TestCasesController],
   providers: [TestCasesService],
+  exports: [TestCasesService]
 })
 export class TestCasesModule {}
