@@ -53,6 +53,14 @@ Once the setup is complete, use the following command to start the application, 
 Also, find the Swagger documentation at the route `/api`, for example, `http://localhost:3002/api/`.
 
 
+
+## Future Improvements
+
+- Make it handle more accuracy analyzing methods like partial match, llm evaluation, json schema validation, function calling
+- Add more llm options in addition to groq, like openai, gemini, and claude
+- Add more customization to how we call the API, like temprature, system roles, and even simulate a chat (automatically across different llms)
+
+
 ## Contributing
 
 Contributions are welcome! Please adhere to the guidelines outlined in the main README.md file. Feel free to submit pull requests and contribute to the improvement of the project. Thank you for your support!
