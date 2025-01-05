@@ -45,7 +45,7 @@ export class TestCasesController {
     type: Number,
     example: 10,
   })
-  @Get('my')
+  @Get()
   findMyTestCases(
     @CurrentUser() currentUser: User,
     @Query('page') page: number = 1,
@@ -54,29 +54,29 @@ export class TestCasesController {
     return this.testCasesService.findByUser(currentUser, page, limit);
   }
 
-  @ApiOperation({ summary: 'Retrieve all test cases' })
-  @ApiResponse({ status: 200, description: 'List of all test cases', type: FindAllResponseDto })
-  @ApiQuery({
-    name: 'page',
-    required: false,
-    description: 'Page number (default is 1)',
-    type: Number,
-    example: 1,
-  })
-  @ApiQuery({
-    name: 'limit',
-    required: false,
-    description: 'Limit per page (default is 10)',
-    type: Number,
-    example: 10,
-  })
-  @Get()
-  findAll(
-    @Query('page') page: number = 1,
-    @Query('limit') limit: number = 10,
-  ): Promise<FindAllResponseDto<TestCase>> {
-    return this.testCasesService.findAll(page, limit);
-  }
+  // @ApiOperation({ summary: 'Retrieve all test cases' })
+  // @ApiResponse({ status: 200, description: 'List of all test cases', type: FindAllResponseDto })
+  // @ApiQuery({
+  //   name: 'page',
+  //   required: false,
+  //   description: 'Page number (default is 1)',
+  //   type: Number,
+  //   example: 1,
+  // })
+  // @ApiQuery({
+  //   name: 'limit',
+  //   required: false,
+  //   description: 'Limit per page (default is 10)',
+  //   type: Number,
+  //   example: 10,
+  // })
+  // @Get()
+  // findAll(
+  //   @Query('page') page: number = 1,
+  //   @Query('limit') limit: number = 10,
+  // ): Promise<FindAllResponseDto<TestCase>> {
+  //   return this.testCasesService.findAll(page, limit);
+  // }
 
   @ApiOperation({ summary: 'Retrieve a specific test case by ID' })
   @ApiParam({ name: 'id', description: 'Unique identifier of the test case', example: 'uuid' })

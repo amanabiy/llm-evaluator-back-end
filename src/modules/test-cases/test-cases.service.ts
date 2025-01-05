@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { GenericDAL } from 'src/DAL/dal';
@@ -14,6 +14,7 @@ export class TestCasesService extends GenericDAL<TestCase, CreateTestCaseDto, Up
   constructor(
     @InjectRepository(TestCase)
     private testCaseRepository: Repository<TestCase>,
+    @Inject(forwardRef(() => ExperimentsService))
     private readonly experimentsService: ExperimentsService  // Inject ExperimentsService
   ) {
     super(testCaseRepository, 0, 10, ['experiment', 'created_by'], TestCase);
@@ -24,12 +25,10 @@ export class TestCasesService extends GenericDAL<TestCase, CreateTestCaseDto, Up
     const experiment = await this.experimentsService.user_has_permission(createTestCaseDto.experimentId, createTestCaseDto.created_by);
 
     // Associate the experiment with the test case
-    const testCase = this.testCaseRepository.create({
+    return await super.create({
       ...createTestCaseDto,
       experiment,
     });
-
-    return this.testCaseRepository.save(testCase);
   }
 
   async createWithoutExperimentOrUser(createTestCaseDto: CreateTestCaseDto): Promise<TestCase> {

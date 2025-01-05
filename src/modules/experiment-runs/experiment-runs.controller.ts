@@ -50,8 +50,17 @@ export class ExperimentRunsController {
   findAll(
     @Query('page') page: number = 1,
     @Query('limit') limit: number = 10,
+    @CurrentUser() currentUser: User,  // Get the current logged-in user
   ): Promise<FindAllResponseDto<ExperimentRun>> {
-    return this.experimentRunsService.findAll(page, limit);
+    return this.experimentRunsService.findWithPagination({
+      where: {
+        experiment: {
+          created_by: {
+            id: currentUser.id
+          }
+        }
+      }
+    }, page, limit);
   }
 
   @ApiOperation({ summary: 'Retrieve a specific experiment run by ID' })

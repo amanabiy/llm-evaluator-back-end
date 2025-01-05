@@ -19,7 +19,7 @@ export class TestCaseResultsService extends GenericDAL<TestCaseResult, CreateTes
 
     private readonly testCasesService: TestCasesService, // Inject TestCasesService to create new test cases
   ) {
-    super(testCaseResultRepository, 0, 10, ['test_case', 'experiment_run', 'run_by'], TestCaseResult);
+    super(testCaseResultRepository, 0, 10, ['test_case', 'experiment_run'], TestCaseResult);
   }
 
   // Create a new TestCaseResult using the `super.create` method from GenericDAL
