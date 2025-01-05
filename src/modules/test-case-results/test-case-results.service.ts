@@ -8,6 +8,8 @@ import { UpdateTestCaseResultDto } from './dto/update-test-case-result.dto';
 import { ExperimentRun } from '../experiment-runs/entities/experiment-run.entity';
 import { TestCase } from '../test-cases/entities/test-case.entity';
 import { TestCasesService } from '../test-cases/test-cases.service'; // Assuming TestCasesService exists
+import { User } from '../users/entity/user.entity';
+import FindAllResponseDto from 'src/dto/find-all-response.dto';
 
 @Injectable()
 export class TestCaseResultsService extends GenericDAL<TestCaseResult, CreateTestCaseResultDto, UpdateTestCaseResultDto> {
@@ -17,7 +19,7 @@ export class TestCaseResultsService extends GenericDAL<TestCaseResult, CreateTes
 
     private readonly testCasesService: TestCasesService, // Inject TestCasesService to create new test cases
   ) {
-    super(testCaseResultRepository, 0, 10, ['test_case', 'experiment_run'], TestCaseResult);
+    super(testCaseResultRepository, 0, 10, ['test_case', 'experiment_run', 'run_by'], TestCaseResult);
   }
 
   // Create a new TestCaseResult using the `super.create` method from GenericDAL
@@ -62,5 +64,16 @@ export class TestCaseResultsService extends GenericDAL<TestCaseResult, CreateTes
       where: { experiment_run: { id: experimentRunId } },  // Include relations if needed
     }, false);
     return results;
+  }
+
+  findByUser(currentUser: User, page: number, limit: number): Promise<FindAllResponseDto<TestCaseResult>> {
+    console.log(page, limit);
+    return this.findWithPagination(
+      {
+        where: { experiment_run: { run_by: { id: currentUser.id } } },
+      },
+      page,
+      limit
+    );
   }
 }
