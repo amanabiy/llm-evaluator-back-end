@@ -6,13 +6,11 @@ import { ConfigModule } from '@nestjs/config';
 import { Module } from '@nestjs/common';
 import { AuthModule } from './modules/auth/auth.module';
 import { MailModule } from './modules/mail/mail.module';
-import { User } from './modules/users/entity/user.entity';
 import { ExperimentsModule } from './modules/experiments/experiments.module';
 import { TestCasesModule } from './modules/test-cases/test-cases.module';
 import { TestCaseResultsModule } from './modules/test-case-results/test-case-results.module';
 import { ExperimentRunsModule } from './modules/experiment-runs/experiment-runs.module';
 import { BullModule } from '@nestjs/bullmq';
-import { OpenAIModule } from './modules/llm/openai/openai.module';
 import { GroqAIModule } from './modules/llm/groq/groq.module';
 
 @Module({

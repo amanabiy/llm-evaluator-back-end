@@ -17,6 +17,6 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
   console.log("connected to the database")
-  await app.listen(3002);
+  await app.listen(3003);
 }
 bootstrap();
