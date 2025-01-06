@@ -6,8 +6,8 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   const config = new DocumentBuilder()
-    .setTitle('E-commerce API')
-    .setDescription('The e-commerce API documentation')
+    .setTitle('LLM Evaluation API')
+    .setDescription('The LLM Evaluation API documentation')
     .setVersion('1.0')
     .addBearerAuth(
       { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
