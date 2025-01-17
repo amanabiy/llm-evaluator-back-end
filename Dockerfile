@@ -25,4 +25,4 @@ COPY ./test ./test
 EXPOSE 3002
 
 # Command to run your app
-CMD ["npm", "run", "start:dev"]
+CMD ["npm", "run", "start"]
